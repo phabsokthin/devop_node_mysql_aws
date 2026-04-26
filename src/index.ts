@@ -5,16 +5,16 @@ import accountRoute from "./routes/account.route";
 const app = express();
 const PORT = 3000;
 app.use(express.json());
+(async () => {
+  try {
+    const conn = await pool.getConnection();
+    console.log("MySQL connected successfully");
+    conn.release();
+  } catch (err) {
+    console.error("❌ Connection failed:", err);
+  }
+})();
 
-// (async () => {
-//   try {
-//     const conn = await pool.getConnection();
-//     console.log("MySQL connected successfully");
-//     conn.release();
-//   } catch (err) {
-//     console.error("❌ Connection failed:", err);
-//   }
-// })();
 
 
 app.use("/users",userRoute);
