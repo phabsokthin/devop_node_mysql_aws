@@ -1,0 +1,58 @@
+name: Deploy Backend + Mysql to EC2 (Docker CI/CD)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+        
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Build Docker image
+      - name: Build Docker image
+        run: docker build --platform linux/amd64 -t node_mysql_backend .
+
+      # 3. Save Docker image
+      - name: Save Docker image
+        run: docker save node_mysql_backend > node_mysql_backend.tar
+
+      # 4. Copy image to EC2
+      - name: Copy image to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "node_mysql_backend.tar"
+          target: "/home/ubuntu/"
+
+      # 5. Deploy on EC2
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker load < node_mysql_backend.tar
+
+            docker stop node_mysql_backend || true
+            docker rm node_mysql_backend || true
+
+            docker run -d \
+              -p 9000:3000 \
+              --name node_mysql_backend \
+              -e DB_NAME=dbpos \
+              -e DB_USER=admin \
+              -e DB_PASS=admin123; \
+              -e DB_HOST=database-1.cd8quqewm11v.ap-southeast-2.rds.amazonaws.com \
+              -e DB_PORT=3306 \
+              -e NODE_ENV=production \
+              node_mysql_backend
