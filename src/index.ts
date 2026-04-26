@@ -16,8 +16,8 @@ app.use(express.json());
 })();
 
 
-app.use("/user",userRoute);
-app.use("/account",accountRoute);
+app.use("/users",userRoute);
+app.use("/accounts",accountRoute);
 
 
 app.listen(PORT, () => {
