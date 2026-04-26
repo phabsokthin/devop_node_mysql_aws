@@ -16,7 +16,6 @@ app.use(express.json());
 })();
 
 
-
 app.use("/users",userRoute);
 app.use("/accounts",accountRoute);
 
