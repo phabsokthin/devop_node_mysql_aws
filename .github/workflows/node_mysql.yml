@@ -51,7 +51,7 @@ jobs:
               --name node_mysql_backend \
               -e DB_NAME=dbpos \
               -e DB_USER=admin \
-              -e DB_PASS=admin123; \
+              -e DB_PASS=admin123 \
               -e DB_HOST=database-1.cd8quqewm11v.ap-southeast-2.rds.amazonaws.com \
               -e DB_PORT=3306 \
               -e NODE_ENV=production \
